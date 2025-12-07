@@ -1,0 +1,7 @@
+{
+  "name": "Astratrix Technologies",
+  "description": "AI Solutions Built for African Businesses. Empowering offline and online organizations with modern tools.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
