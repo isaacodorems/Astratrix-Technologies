@@ -16,8 +16,8 @@ export const FXInsightLogo: React.FC<{ className?: string }> = ({ className = "w
       </linearGradient>
     </defs>
     <rect width="100" height="100" rx="20" fill="#F0F9FF" />
-    <path d="M20 70 L45 45 L65 55 L85 20" stroke="url(#fx_grad1)" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M20 70 L45 45 L65 55 L85 20 L85 90 L20 90 Z" fill="url(#fx_grad2)" opacity="0.2" />
+    <path d="M20 70 L 45 45 L 65 55 L 85 20" stroke="url(#fx_grad1)" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M20 70 L 45 45 L 65 55 L 85 20 L 85 90 L 20 90 Z" fill="url(#fx_grad2)" opacity="0.2" />
     <path d="M30 80 L50 60 L60 65 L80 40" stroke="#06B6D4" strokeWidth="4" strokeLinecap="round" opacity="0.6" />
   </svg>
 );
@@ -179,6 +179,86 @@ export const VitalCareLogo: React.FC<{ className?: string }> = ({ className = "w
     <path d="M50 45 C 30 45, 30 75, 50 75 C 70 75, 70 45, 50 45 Z" fill="#A855F7" />
     <path d="M30 55 Q 50 85, 70 55" stroke="#9333EA" strokeWidth="4" strokeLinecap="round" fill="none" />
     <path d="M40 20 L 50 15 L 60 20" stroke="#9333EA" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+  </svg>
+);
+
+// --- Category Specific Logos ---
+
+// AI Automation
+export const AIAutomationLogo: React.FC<{ className?: string }> = ({ className = "w-full h-full" }) => (
+  <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+    <rect width="100" height="100" rx="20" fill="#FAFAFA" />
+    <path d="M50 20 L 80 35 V 65 L 50 80 L 20 65 V 35 L 50 20 Z" fill="#E879F9" opacity="0.3" />
+    <path d="M50 20 L 80 35 V 65 L 50 80 L 20 65 V 35 L 50 20 Z" stroke="#C026D3" strokeWidth="3" />
+    <path d="M50 20 V 50 M 50 50 L 80 35 M 50 50 L 20 35" stroke="#C026D3" strokeWidth="3" />
+    <path d="M50 50 L 50 80" stroke="#C026D3" strokeWidth="3" />
+    <circle cx="50" cy="50" r="10" fill="#F0ABFC" />
+  </svg>
+);
+
+// Digital Presence
+export const DigitalPresenceLogo: React.FC<{ className?: string }> = ({ className = "w-full h-full" }) => (
+  <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+    <rect width="100" height="100" rx="20" fill="#FAFAFA" />
+    <path d="M25 65 Q 35 30, 50 30 T 75 65" stroke="#4F46E5" strokeWidth="8" strokeLinecap="round" />
+    <path d="M35 65 Q 40 45, 50 45 T 65 65" stroke="#818CF8" strokeWidth="6" strokeLinecap="round" />
+    <rect x="25" y="25" width="20" height="20" rx="5" fill="#4F46E5" opacity="0.8" />
+  </svg>
+);
+
+// Security & Surveillance
+export const SecuritySurveillanceLogo: React.FC<{ className?: string }> = ({ className = "w-full h-full" }) => (
+  <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+    <defs>
+        <linearGradient id="shield_grad" x1="0" y1="0" x2="100" y2="100">
+            <stop offset="0%" stopColor="#2563EB" />
+            <stop offset="100%" stopColor="#06B6D4" />
+        </linearGradient>
+    </defs>
+    <rect width="100" height="100" rx="20" fill="#FAFAFA" />
+    
+    {/* Blue Shield */}
+    <path d="M50 85 C 75 70, 80 45, 80 30 L 50 20 L 20 30 C 20 45, 25 70, 50 85 Z" fill="url(#shield_grad)" />
+    
+    {/* White Star */}
+    <path d="M50 38 L 53.5 48 H 64 L 55.5 54 L 58.5 64 L 50 58 L 41.5 64 L 44.5 54 L 36 48 H 46.5 L 50 38 Z" fill="white" />
+    
+    {/* Orbit Ring - Behind */}
+    <path d="M 20 55 C 20 65, 80 55, 80 45" stroke="#BAE6FD" strokeWidth="4" strokeLinecap="round" fill="none" opacity="0.4" />
+    
+    {/* Orbit Ring - Front */}
+    <path d="M 80 45 C 80 35, 20 45, 20 55" stroke="white" strokeWidth="4" strokeLinecap="round" fill="none" opacity="0.8"/>
+  </svg>
+);
+
+// Creator Automation
+export const CreatorAutomationLogo: React.FC<{ className?: string }> = ({ className = "w-full h-full" }) => (
+  <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+    <rect width="100" height="100" rx="20" fill="#FAFAFA" />
+    <path d="M20 50 C 40 40, 60 60, 80 50" stroke="#0EA5E9" strokeWidth="6" strokeLinecap="round" />
+    <path d="M20 60 C 40 50, 60 70, 80 60" stroke="#38BDF8" strokeWidth="4" strokeLinecap="round" />
+    <circle cx="50" cy="35" r="10" fill="#0284C7" />
+  </svg>
+);
+
+// Health & EdTech
+export const HealthEdTechLogo: React.FC<{ className?: string }> = ({ className = "w-full h-full" }) => (
+  <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+    <rect width="100" height="100" rx="20" fill="#FAFAFA" />
+    <path d="M35 30 C 35 30, 20 40, 35 50 C 50 60, 50 40, 65 50 C 80 60, 65 70, 65 70" stroke="#A855F7" strokeWidth="6" strokeLinecap="round" />
+    <rect x="30" y="60" width="10" height="20" rx="5" fill="#D8B4FE" />
+    <rect x="60" y="20" width="10" height="20" rx="5" fill="#D8B4FE" />
+    <rect x="45" y="40" width="10" height="20" rx="5" fill="#A855F7" />
+  </svg>
+);
+
+// Predictive Analytics
+export const PredictiveAnalyticsLogo: React.FC<{ className?: string }> = ({ className = "w-full h-full" }) => (
+  <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+    <rect width="100" height="100" rx="20" fill="#FAFAFA" />
+    <path d="M20 70 C 40 70, 40 40, 60 40 C 80 40, 80 20, 80 20" stroke="#16A34A" strokeWidth="8" strokeLinecap="round" />
+    <path d="M80 20 L 60 20 M 80 20 L 80 40" stroke="#16A34A" strokeWidth="8" strokeLinecap="round" />
+    <rect x="25" y="75" width="50" height="5" rx="2" fill="#BBF7D0" />
   </svg>
 );
 

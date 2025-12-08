@@ -1,6 +1,15 @@
+
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { ArrowRight, CheckCircle2, Bot, Globe, Shield, Activity, BarChart, Smartphone } from 'lucide-react';
+import { ArrowRight, CheckCircle2 } from 'lucide-react';
+import { 
+  AIAutomationLogo, 
+  DigitalPresenceLogo, 
+  SecuritySurveillanceLogo, 
+  CreatorAutomationLogo, 
+  HealthEdTechLogo, 
+  PredictiveAnalyticsLogo 
+} from '../components/SolutionLogos';
 
 const Home: React.FC = () => {
   return (
@@ -54,32 +63,32 @@ const Home: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <FeatureCard 
-              icon={<Bot />} 
+              icon={<AIAutomationLogo className="w-12 h-12" />} 
               title="AI Automation" 
               desc="Streamline operations and gain deep insights from your data automatically." 
             />
             <FeatureCard 
-              icon={<Globe />} 
+              icon={<DigitalPresenceLogo className="w-12 h-12" />} 
               title="Digital Presence" 
               desc="Helping offline businesses establish and manage a powerful digital footprint." 
             />
             <FeatureCard 
-              icon={<Shield />} 
+              icon={<SecuritySurveillanceLogo className="w-12 h-12" />} 
               title="Security & Surveillance" 
               desc="Smart monitoring systems that protect your assets around the clock." 
             />
             <FeatureCard 
-              icon={<Activity />} 
+              icon={<CreatorAutomationLogo className="w-12 h-12" />} 
               title="Creator Automation" 
               desc="Tools to help content creators grow audiences and manage production." 
             />
             <FeatureCard 
-              icon={<Smartphone />} 
+              icon={<HealthEdTechLogo className="w-12 h-12" />} 
               title="Health & EdTech" 
               desc="Accessible AI systems for clinics and schools, even in remote areas." 
             />
             <FeatureCard 
-              icon={<BarChart />} 
+              icon={<PredictiveAnalyticsLogo className="w-12 h-12" />} 
               title="Predictive Analytics" 
               desc="Forecast market trends and customer behaviors with high accuracy." 
             />
@@ -147,8 +156,8 @@ const Home: React.FC = () => {
 
 const FeatureCard: React.FC<{ icon: React.ReactNode, title: string, desc: string }> = ({ icon, title, desc }) => (
   <div className="bg-white border border-gray-200 p-8 rounded-2xl hover:border-azure/50 hover:shadow-lg transition-all duration-300 group shadow-sm">
-    <div className="h-12 w-12 bg-azure/10 rounded-xl flex items-center justify-center text-azure mb-6 group-hover:bg-azure group-hover:text-white transition-colors duration-300">
-      {React.cloneElement(icon as React.ReactElement, { size: 24 } as any)}
+    <div className="h-20 w-20 bg-azure/5 rounded-2xl flex items-center justify-center text-azure mb-6 group-hover:bg-azure/10 transition-colors duration-300 p-4">
+      {icon}
     </div>
     <h3 className="text-xl font-bold text-slate-900 mb-3">{title}</h3>
     <p className="text-gray-600 leading-relaxed">{desc}</p>
