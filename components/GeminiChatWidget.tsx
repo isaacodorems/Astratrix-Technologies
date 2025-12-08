@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageSquare, X, Send, Sparkles, Loader2, Mic } from 'lucide-react';
+import { MessageSquare, X, Send, Mic } from 'lucide-react';
 import { generateAIResponse } from '../services/geminiService';
 import VoiceAgent from './VoiceAgent';
 
@@ -8,15 +8,18 @@ interface Message {
   text: string;
 }
 
+const AVATAR_URL = "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150&h=150";
+
 const GeminiChatWidget: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [mode, setMode] = useState<'chat' | 'voice'>('chat');
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'ai', text: "Hello! I'm Astra. Ask me anything about our AI solutions for African businesses." }
+    { role: 'ai', text: "Hi there! I'm Astra. How can I help you grow your business today?" }
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const hasOpenedRef = useRef(false);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -26,16 +29,32 @@ const GeminiChatWidget: React.FC = () => {
     scrollToBottom();
   }, [messages, isOpen, mode]);
 
+  // Proactive Engagement: Open chat automatically after 4 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!hasOpenedRef.current) {
+        setIsOpen(true);
+        hasOpenedRef.current = true;
+      }
+    }, 4000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
 
     const userMessage = input.trim();
     setInput('');
-    setMessages(prev => [...prev, { role: 'user', text: userMessage }]);
+    
+    // Create optimistic update
+    const newHistory: Message[] = [...messages, { role: 'user', text: userMessage }];
+    setMessages(newHistory);
     setIsLoading(true);
 
-    const aiText = await generateAIResponse(userMessage);
+    // Pass the FULL history to the AI service
+    const aiText = await generateAIResponse(newHistory);
 
     setMessages(prev => [...prev, { role: 'ai', text: aiText }]);
     setIsLoading(false);
@@ -50,10 +69,19 @@ const GeminiChatWidget: React.FC = () => {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="bg-azure text-white p-4 rounded-full shadow-[0_4px_14px_0_rgba(14,165,233,0.39)] hover:scale-110 transition-transform duration-200"
+          className="relative group p-0 rounded-full shadow-[0_4px_14px_0_rgba(14,165,233,0.39)] hover:scale-110 transition-transform duration-200 bg-white"
           aria-label="Open AI Assistant"
         >
-          <Sparkles className="h-6 w-6" />
+          <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full z-10"></div>
+          <img 
+            src={AVATAR_URL} 
+            alt="Astra AI" 
+            className="w-16 h-16 rounded-full object-cover border-2 border-azure p-0.5"
+          />
+          {/* Tooltip bubble */}
+          <div className="absolute right-full mr-4 top-1/2 -translate-y-1/2 bg-white px-4 py-2 rounded-xl rounded-tr-none shadow-lg border border-gray-100 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+             <span className="text-sm font-medium text-slate-800">Hi! Need help?</span>
+          </div>
         </button>
       )}
 
@@ -61,14 +89,24 @@ const GeminiChatWidget: React.FC = () => {
         <div className="bg-white border border-gray-200 rounded-2xl w-[350px] sm:w-[400px] h-[500px] shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-300">
           
           {mode === 'voice' ? (
-             <VoiceAgent onClose={() => setMode('chat')} />
+             <VoiceAgent onClose={() => setMode('chat')} avatarUrl={AVATAR_URL} />
           ) : (
             <>
               {/* Header */}
               <div className="bg-slate-50 p-4 border-b border-gray-200 flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <Sparkles className="h-5 w-5 text-azure" />
-                  <span className="font-bold text-gray-900">Astra Assistant</span>
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <img 
+                        src={AVATAR_URL} 
+                        alt="Astra" 
+                        className="w-10 h-10 rounded-full object-cover border border-gray-200"
+                    />
+                    <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full"></div>
+                  </div>
+                  <div>
+                    <span className="font-bold text-gray-900 block leading-tight">Astra</span>
+                    <span className="text-xs text-azure font-medium">AI Assistant</span>
+                  </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <button 
@@ -92,8 +130,11 @@ const GeminiChatWidget: React.FC = () => {
                 {messages.map((msg, idx) => (
                   <div
                     key={idx}
-                    className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                    className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start items-end gap-2'}`}
                   >
+                    {msg.role === 'ai' && (
+                        <img src={AVATAR_URL} alt="Astra" className="w-6 h-6 rounded-full object-cover mb-1 border border-gray-100" />
+                    )}
                     <div
                       className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm shadow-sm ${
                         msg.role === 'user'
@@ -106,9 +147,12 @@ const GeminiChatWidget: React.FC = () => {
                   </div>
                 ))}
                 {isLoading && (
-                  <div className="flex justify-start">
-                    <div className="bg-slate-100 rounded-2xl px-4 py-3 rounded-tl-none border border-gray-100">
-                      <Loader2 className="h-5 w-5 animate-spin text-azure" />
+                  <div className="flex justify-start items-end gap-2">
+                    <img src={AVATAR_URL} alt="Astra" className="w-6 h-6 rounded-full object-cover mb-1" />
+                    <div className="bg-slate-100 rounded-2xl px-4 py-3 rounded-tl-none border border-gray-100 flex gap-1">
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
                     </div>
                   </div>
                 )}
@@ -122,7 +166,7 @@ const GeminiChatWidget: React.FC = () => {
                     type="text"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
-                    placeholder="Ask about our tools..."
+                    placeholder="Ask a question..."
                     className="flex-1 bg-white border border-gray-200 rounded-full px-4 py-2 text-sm text-gray-900 focus:outline-none focus:border-azure focus:ring-1 focus:ring-azure transition-all shadow-sm"
                   />
                   <button

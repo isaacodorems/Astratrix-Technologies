@@ -1,14 +1,4 @@
 import { Solution, BlogPost, FaqItem, NavItem } from './types';
-import { 
-  Bot, 
-  Store, 
-  ShieldCheck, 
-  Video, 
-  Stethoscope, 
-  BarChart3, 
-  Cpu, 
-  Globe 
-} from 'lucide-react';
 
 export const NAV_ITEMS: NavItem[] = [
   { label: 'Home', path: '/' },
@@ -78,42 +68,194 @@ export const SOLUTIONS: Solution[] = [
     iconName: 'ShieldCheck'
   },
   {
-    id: 'creator-studio-ai',
-    title: 'Creator Studio AI',
-    category: 'Media & Creator Tools',
-    shortDescription: 'Automate content creation and YouTube growth.',
-    fullDescription: 'Helping African creators compete globally. This tool automates video editing, generates localized captions, and optimizes thumbnails for higher click-through rates.',
+    id: 'railearnin',
+    title: 'RAILearnin',
+    category: 'Education Technology',
+    shortDescription: 'Hybrid AI-powered learning platform.',
+    fullDescription: 'A hybrid AI-powered learning platform combining the best of Coursera, Udemy, and YouTube Learning. RAILearnin aggregates high-quality resources into structured learning paths tailored to your pace and goals.',
     features: [
-      'Auto-Edit Silence Removal',
-      'Multi-language Caption Generator',
-      'Trend Prediction Engine'
+      'Cross-platform Content Aggregation',
+      'AI-generated Learning Paths',
+      'Interactive Progress Quizzes'
     ],
     benefits: [
-      'Produce content 5x faster',
-      'Reach global audiences with translation',
-      'Data-driven topic selection'
+      'Access diverse learning materials in one place',
+      'Personalized education adapted to your speed',
+      'Cost-effective skill acquisition'
     ],
-    useCases: ['YouTubers', 'Influencers', 'Digital Marketers'],
-    iconName: 'Video'
+    useCases: ['Students', 'Career Switchers', 'Self-taught Developers'],
+    iconName: 'GraduationCap'
   },
   {
-    id: 'med-assist-local',
-    title: 'MedAssist Local',
-    category: 'Healthcare Solutions',
-    shortDescription: 'Diagnostic support for rural clinics.',
-    fullDescription: 'An AI assistant for healthcare workers in remote areas. Input symptoms and basic vitals to get triage recommendations and possible diagnoses based on local epidemiological data.',
+    id: 'pawsome-picks',
+    title: 'PawSome Picks',
+    category: 'E-commerce & Lifestyle',
+    shortDescription: 'AI shopping assistant for pet owners.',
+    fullDescription: 'A delightful e-commerce store for pet owners featuring an AI shopping assistant. It helps find the perfect treats, toys, and care products for your furry friends based on their breed, age, and dietary requirements.',
     features: [
-      'Works via SMS/USSD fallback',
-      'Local language support',
-      'Offline medical database'
+      'Breed-Specific Product Matching',
+      'Dietary Requirement Filters',
+      'AI Gift Finder'
     ],
     benefits: [
-      'Faster patient triage',
-      'Standardized care protocols',
-      'Continuous learning resource for nurses'
+      'Discover healthy products faster',
+      'Personalized shopping experience',
+      'Reduce trial-and-error with pet food'
     ],
-    useCases: ['Rural Clinics', 'Pharmacies', 'Telehealth Providers'],
-    iconName: 'Stethoscope'
+    useCases: ['Pet Owners', 'Veterinary Clinics', 'Pet Boutiques'],
+    iconName: 'Dog'
+  },
+  {
+    id: 'tubegenius-ai',
+    title: 'TubeGenius AI',
+    category: 'Media & Creator Tools',
+    shortDescription: 'Faceless YouTube automation assistant.',
+    fullDescription: 'A comprehensive faceless YouTube automation assistant that generates scripts, SEO metadata, thumbnails, and content strategies in seconds. Designed to help creators scale their channels without being on camera.',
+    features: [
+      'Instant Script Generation',
+      'Thumbnail Concept Designer',
+      'SEO Tag & Title Optimization'
+    ],
+    benefits: [
+      'Launch channels in record time',
+      'Consistent content production',
+      'Data-driven topic selection'
+    ],
+    useCases: ['Faceless Content Creators', 'Digital Marketers', 'Agencies'],
+    iconName: 'Clapperboard'
+  },
+  {
+    id: 'ai-course-architect',
+    title: 'AI Course Architect',
+    category: 'Education Technology',
+    shortDescription: 'Transform documents into course outlines.',
+    fullDescription: 'An AI-powered tool that transforms documents, videos, or images into comprehensive and engaging course outlines. Upload your material, and the AI will generate a structured curriculum with learning objectives, key concepts, interactive quizzes, and a final assessment.',
+    features: [
+      'Document-to-Curriculum Converter',
+      'Automatic Quiz Generation',
+      'Learning Objective Mapping'
+    ],
+    benefits: [
+      'Save weeks of course planning time',
+      'Standardized educational quality',
+      'Instantly turn raw content into lessons'
+    ],
+    useCases: ['Teachers', 'Corporate Trainers', 'Course Creators'],
+    iconName: 'BookOpen'
+  },
+  {
+    id: 'revisionary-ai',
+    title: 'Revisionary AI',
+    category: 'Business Strategy',
+    shortDescription: 'AI-powered innovation strategist.',
+    fullDescription: 'An AI-powered innovation strategist that researches industries, identifies key problems, and proposes cutting-edge AI solutions. It helps businesses stay ahead of the curve by identifying disruption opportunities before competitors do.',
+    features: [
+      'Industry Trend Analysis',
+      'Problem-Solution Mapping',
+      'Innovation Roadmap Generation'
+    ],
+    benefits: [
+      'Identify new revenue streams',
+      'Stay ahead of market disruptions',
+      'Data-driven strategic planning'
+    ],
+    useCases: ['Startups', 'Business Consultants', 'R&D Departments'],
+    iconName: 'Lightbulb'
+  },
+  {
+    id: 'nexus-entertainment',
+    title: 'Nexus Entertainment Generator',
+    category: 'Entertainment & Creative',
+    shortDescription: 'AI-driven entertainment concept generator.',
+    fullDescription: 'A powerful AI-driven tool that fuses unexpected activities, spaces, and equipment into groundbreaking entertainment business concepts. Perfect for event planners and entrepreneurs looking for the next big thing in leisure.',
+    features: [
+      'Concept Fusion Engine',
+      'Venue & Equipment Matching',
+      'Experience Blueprinting'
+    ],
+    benefits: [
+      'Create unique market differentiators',
+      'Rapid brainstorming of event ideas',
+      'Novel business model generation'
+    ],
+    useCases: ['Event Planners', 'Theme Park Designers', 'Entrepreneurs'],
+    iconName: 'Sparkles'
+  },
+  {
+    id: 'carebridge-ai',
+    title: 'CareBridge AI',
+    category: 'Healthcare Solutions',
+    shortDescription: 'AI-augmented telehealth platform.',
+    fullDescription: 'A secure, AI-augmented telehealth platform expanding access to quality care across Nigeria. It connects patients with doctors and uses AI triage to prioritize critical cases and assist with preliminary diagnosis.',
+    features: [
+      'AI Symptom Triage',
+      'Secure Video Consultations',
+      'Digital Health Record Management'
+    ],
+    benefits: [
+      'Access to doctors from remote areas',
+      'Reduced waiting times',
+      'Lower healthcare costs'
+    ],
+    useCases: ['Rural Clinics', 'Patients', 'Health Providers'],
+    iconName: 'Heart'
+  },
+  {
+    id: 'apexroute-ai',
+    title: 'ApexRoute AI',
+    category: 'Logistics & Operations',
+    shortDescription: 'Enterprise-grade logistics optimization.',
+    fullDescription: 'Enterprise-grade logistics optimization platform for Nigeria featuring AI-driven route planning, fleet management, and real-time analytics. Optimizes delivery routes based on local traffic patterns and road conditions.',
+    features: [
+      'Smart Route Optimization',
+      'Fleet Maintenance Prediction',
+      'Real-time Delivery Tracking'
+    ],
+    benefits: [
+      'Reduce fuel consumption',
+      'Improve delivery timeliness',
+      'Maximize fleet utilization'
+    ],
+    useCases: ['Logistics Companies', 'Delivery Fleets', 'Supply Chain Managers'],
+    iconName: 'MapPin'
+  },
+  {
+    id: 'ai-content-generator',
+    title: 'AI Content & Article Generator',
+    category: 'Media & Creator Tools',
+    shortDescription: 'Transform documents into engaging content.',
+    fullDescription: 'An AI-powered application that transforms document text into engaging social media content or well-researched, long-form articles with cited sources. Streamlines the content marketing workflow for businesses and writers.',
+    features: [
+      'Document-to-Social Converter',
+      'Long-form Article Writer',
+      'Source Citation Manager'
+    ],
+    benefits: [
+      'Repurpose existing content easily',
+      'Maintain consistent posting schedules',
+      'High-quality, researched output'
+    ],
+    useCases: ['Content Marketers', 'Writers', 'Social Media Managers'],
+    iconName: 'FileText'
+  },
+  {
+    id: 'vitalcare-health',
+    title: 'VitalCare Health & Wellness App',
+    category: 'Healthcare Solutions',
+    shortDescription: 'Personalized health & supplement recommendations.',
+    fullDescription: 'A comprehensive health and wellness application that monitors user health data and provides personalized VitalCare supplement recommendations powered by Gemini. Tracks vitals and suggests lifestyle changes for better living.',
+    features: [
+      'Personalized Supplement Plans',
+      'Health Vitals Tracking',
+      'AI Wellness Coaching'
+    ],
+    benefits: [
+      'Tailored health advice',
+      'Proactive wellness management',
+      'Data-driven supplement choices'
+    ],
+    useCases: ['Individuals', 'Wellness Coaches', 'Nutritionists'],
+    iconName: 'Activity'
   }
 ];
 

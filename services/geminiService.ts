@@ -1,46 +1,132 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, Type, FunctionDeclaration, Content } from "@google/genai";
 
 const apiKey = process.env.API_KEY;
-// Initialize with safety check (though strict instructions say assume it's there, 
-// good practice for frontend resilience if environment is missed during dev)
+// Initialize with safety check
 const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
 
-export const generateAIResponse = async (userPrompt: string): Promise<string> => {
+const bookAppointmentTool: FunctionDeclaration = {
+  name: "bookAppointment",
+  description: "Book a consultation appointment. Use this when the user confirms they want to meet and provides their details.",
+  parameters: {
+    type: Type.OBJECT,
+    properties: {
+      name: { type: Type.STRING, description: "Name of the user" },
+      contact: { type: Type.STRING, description: "Phone number or email" },
+      dateTime: { type: Type.STRING, description: "Preferred date and time" },
+      reason: { type: Type.STRING, description: "Purpose of the appointment" },
+    },
+    required: ["name", "contact", "dateTime"],
+  },
+};
+
+const sendEmailTool: FunctionDeclaration = {
+  name: "sendEmail",
+  description: "Send an email alert to the Astratrix sales team about a potential customer or inquiry.",
+  parameters: {
+    type: Type.OBJECT,
+    properties: {
+      customerName: { type: Type.STRING, description: "Name of the customer" },
+      contactInfo: { type: Type.STRING, description: "Contact details" },
+      inquirySummary: { type: Type.STRING, description: "Summary of what they need" },
+    },
+    required: ["inquirySummary"],
+  },
+};
+
+const systemInstruction = `You are Astra, a senior business consultant at Astratrix Technologies. 
+Your goal is to have a natural, human-like conversation to understand the user's business challenges and convert them into a potential client.
+
+**CRITICAL BEHAVIOR RULES:**
+1. **NO REPETITION:** Do NOT repeat "I am Astra" or the full company description in every message. Assume the user knows who you are after the first time.
+2. **BE PROACTIVE:** Ask probing questions. e.g., "Do you struggle with internet reliability?" or "Are you looking to automate your sales?"
+3. **CONCISE:** Keep responses short (under 3 sentences) unless explaining a complex solution.
+4. **TOOLS:** 
+   - Use 'bookAppointment' if the user agrees to a meeting.
+   - Use 'sendEmail' if they want someone to contact them later.
+
+**KNOWLEDGE BASE:**
+- **Products:** 
+  - *RetailBot Pro* (Offline inventory for shops).
+  - *FXInsight AI* (Forex trading).
+  - *SecureEye Africa* (AI CCTV).
+  - *RAILearnin* (Hybrid AI learning platform).
+  - *PawSome Picks* (AI-powered pet store & assistant).
+  - *TubeGenius AI* (YouTube automation & scripts).
+  - *AI Course Architect* (Curriculum generator).
+  - *Revisionary AI* (Innovation strategist & researcher).
+  - *Nexus Entertainment Generator* (Business concept generator).
+  - *CareBridge AI* (Telehealth platform).
+  - *ApexRoute AI* (Logistics optimization).
+  - *AI Content & Article Generator* (Document to content).
+  - *VitalCare Health & Wellness App* (Supplement recommendations).
+- **Location:** Port Harcourt, Nigeria.
+`;
+
+export const generateAIResponse = async (history: {role: string, text: string}[]): Promise<string> => {
   if (!ai) {
     return "AI Service is currently unavailable. Please check API Key configuration.";
   }
 
   try {
     const model = 'gemini-2.5-flash';
-    const systemInstruction = `You are Astra, the AI assistant for Astratrix, an AI solutions company for African businesses. 
-    Your tone is professional, futuristic, yet accessible and friendly.
-    You should explain how Astratrix helps offline and online businesses.
     
-    Key Information about Astratrix:
-    - We build AI tools for African businesses (SMEs to Enterprise).
-    - Focus on offline-first capabilities, automation, security, and analytics.
-    - Located in Port Harcourt, Nigeria.
-    - Mission: Make AI accessible to everyone.
-    
-    If asked about specific tools, refer to:
-    - FXInsight AI (Forex)
-    - RetailBot Pro (Offline retail)
-    - SecureEye Africa (Security)
-    - Creator Studio AI (Media)
-    
-    Keep responses concise (under 100 words) unless asked for details.`;
+    // Convert history to 'contents' format
+    const contents: Content[] = history.map(msg => ({
+      role: msg.role === 'ai' ? 'model' : 'user',
+      parts: [{ text: msg.text }]
+    }));
 
-    const response = await ai.models.generateContent({
+    const result = await ai.models.generateContent({
       model: model,
-      contents: userPrompt,
+      contents: contents,
       config: {
         systemInstruction: systemInstruction,
+        tools: [{ functionDeclarations: [bookAppointmentTool, sendEmailTool] }],
       }
     });
 
-    return response.text || "I apologize, I couldn't generate a response at this moment.";
+    // Handle Tool Calls
+    const toolCalls = result.candidates?.[0]?.content?.parts?.filter(p => p.functionCall);
+    
+    if (toolCalls && toolCalls.length > 0) {
+      // Execute tools (simulated)
+      const functionResponses = toolCalls.map(part => {
+        const call = part.functionCall!;
+        console.log(`[Tool Execution] ${call.name}`, call.args);
+        
+        // Return a mock success response to the model
+        let responseContent = { result: "Action executed successfully." };
+        
+        if (call.name === 'bookAppointment') {
+           responseContent = { result: "Appointment booked. PLEASE CONFIRM THIS TO THE USER." };
+        } else if (call.name === 'sendEmail') {
+           responseContent = { result: "Email sent to sales team. PLEASE CONFIRM THIS TO THE USER." };
+        }
+
+        return {
+          id: call.id,
+          name: call.name,
+          response: responseContent
+        };
+      });
+
+      // Send the tool output back to the model to get the final natural language response
+      const finalResult = await ai.models.generateContent({
+        model: model,
+        contents: [
+          ...contents, 
+          result.candidates![0].content, // The assistant's message with the function call
+          { role: 'tool', parts: functionResponses.map(fr => ({ functionResponse: fr })) } // Our tool response
+        ],
+         config: { systemInstruction }
+      });
+      
+      return finalResult.text || "Action completed.";
+    }
+
+    return result.text || "I apologize, I couldn't generate a response.";
   } catch (error) {
     console.error("Gemini API Error:", error);
-    return "I'm having trouble connecting to the neural network. Please try again later.";
+    return "I'm having trouble connecting to the network right now.";
   }
 };

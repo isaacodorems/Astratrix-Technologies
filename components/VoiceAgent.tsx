@@ -1,18 +1,22 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Mic, MicOff, PhoneOff, CalendarCheck, Loader2, Volume2 } from 'lucide-react';
+import { Mic, MicOff, PhoneOff, CalendarCheck, Loader2, Volume2, Headset } from 'lucide-react';
 import { GoogleGenAI, LiveServerMessage, Modality, Type, FunctionDeclaration } from "@google/genai";
 import { base64ToUint8Array, float32To16BitPCM, arrayBufferToBase64, decodeAudioData, PCM_SAMPLE_RATE, AUDIO_SAMPLE_RATE } from '../services/audioUtils';
 
 interface VoiceAgentProps {
   onClose: () => void;
+  avatarUrl?: string;
 }
 
-const VoiceAgent: React.FC<VoiceAgentProps> = ({ onClose }) => {
+const DEFAULT_AVATAR = "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150&h=150";
+
+const VoiceAgent: React.FC<VoiceAgentProps> = ({ onClose, avatarUrl = DEFAULT_AVATAR }) => {
   const [isConnected, setIsConnected] = useState(false);
   const [status, setStatus] = useState("Initializing...");
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [micMuted, setMicMuted] = useState(false);
   const [appointmentBooked, setAppointmentBooked] = useState<string | null>(null);
+  const [humanHandoff, setHumanHandoff] = useState(false);
 
   // Refs for audio handling
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -64,19 +68,32 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ onClose }) => {
       const outputCtx = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: AUDIO_SAMPLE_RATE });
       outputAudioContextRef.current = outputCtx;
 
-      // Define Tool
+      // Tool 1: Book Appointment
       const bookAppointmentTool: FunctionDeclaration = {
         name: "bookAppointment",
-        description: "Book a consultation appointment for the user.",
+        description: "Book a consultation appointment. Use this when the user confirms they want to meet and provides their details.",
         parameters: {
           type: Type.OBJECT,
           properties: {
             name: { type: Type.STRING, description: "Name of the user" },
             contact: { type: Type.STRING, description: "Phone number or email" },
             dateTime: { type: Type.STRING, description: "Preferred date and time of the appointment" },
-            reason: { type: Type.STRING, description: "Purpose of the appointment (e.g., Automation, Security)" },
+            reason: { type: Type.STRING, description: "Purpose of the appointment" },
           },
           required: ["name", "contact", "dateTime"],
+        },
+      };
+
+      // Tool 2: Refer to Human Agent
+      const referToHumanTool: FunctionDeclaration = {
+        name: "referToHuman",
+        description: "Transfer the call to a human agent. MANDATORY to call this if: 1. User asks for a human. 2. You fail to understand the user twice.",
+        parameters: {
+          type: Type.OBJECT,
+          properties: {
+            reason: { type: Type.STRING, description: "Reason for the transfer (e.g., 'User request', 'Misunderstanding')" },
+          },
+          required: ["reason"],
         },
       };
 
@@ -150,14 +167,12 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ onClose }) => {
 
             // Handle Tool Calls
             if (message.toolCall) {
-                setStatus("Confirming appointment...");
                 for (const fc of message.toolCall.functionCalls) {
                     if (fc.name === 'bookAppointment') {
-                        // Execute "Booking"
+                        setStatus("Confirming appointment...");
                         const args = fc.args as any;
                         setAppointmentBooked(`Appointment confirmed for ${args.name} on ${args.dateTime}`);
                         
-                        // Send response back to model
                         sessionPromise.then(session => {
                             session.sendToolResponse({
                                 functionResponses: {
@@ -167,7 +182,19 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ onClose }) => {
                                 }
                             });
                         });
-                        // status update happens after audio starts coming back
+                    } else if (fc.name === 'referToHuman') {
+                        setStatus("Transferring call...");
+                        setHumanHandoff(true);
+                        
+                        sessionPromise.then(session => {
+                            session.sendToolResponse({
+                                functionResponses: {
+                                    id: fc.id,
+                                    name: fc.name,
+                                    response: { result: "Transfer initiated. Please inform the user to hold." }
+                                }
+                            });
+                        });
                     }
                 }
             }
@@ -183,14 +210,46 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ onClose }) => {
         },
         config: {
           responseModalities: [Modality.AUDIO],
-          systemInstruction: `You are Astra, the voice receptionist for Astratrix. 
-          Your goal is to book a consultation appointment for the user. 
-          1. Greet the user professionally and ask how you can help.
-          2. To book an appointment, you MUST obtain: Name, Contact Info, and Preferred Date/Time.
-          3. Ask one question at a time. Keep it conversational.
-          4. Once you have the info, call the 'bookAppointment' tool.
-          5. After booking, confirm the exact date and time to the user verbally and say goodbye.`,
-          tools: [{ functionDeclarations: [bookAppointmentTool] }],
+          systemInstruction: `You are Astra, a senior business consultant at Astratrix Technologies. 
+Your goal is to have a natural, human-like conversation to understand the user's business challenges and convert them into a potential client by booking a consultation.
+
+**CRITICAL GUARDRAILS (DO NOT VIOLATE):**
+1. **NO REPETITION:** Do NOT repeat your name ("I am Astra") or the full company description in every response. Introduce yourself ONLY ONCE at the start.
+2. **BE HUMAN:** Do not sound like a robot reading a script. Use varied phrasing.
+3. **LISTEN FIRST:** Do not list all products immediately. Ask probing questions to understand the user's needs first (e.g., "Do you own a retail store?", "Are you interested in trading automation?").
+4. **CONCISE:** Keep responses short (maximum 2 sentences). This is a voice conversation.
+
+**ESCALATION PROTOCOL:**
+You **MUST** call the 'referToHuman' tool immediately if:
+- The user explicitly asks for a human, agent, or person.
+- You have misunderstood the user's intent or failed to provide a relevant answer TWICE in a row.
+- The user expresses frustration.
+
+**KNOWLEDGE BASE:**
+- **Who we are:** Astratrix Technologies, based in Port Harcourt, Nigeria. We build AI for African businesses.
+- **Products:** 
+  - *RetailBot Pro* (Offline inventory & theft prevention for shops).
+  - *FXInsight AI* (Forex trading analytics).
+  - *SecureEye Africa* (AI Security/CCTV).
+  - *RAILearnin* (Hybrid AI learning platform).
+  - *PawSome Picks* (AI-powered pet store & assistant).
+  - *TubeGenius AI* (YouTube automation & scripts).
+  - *AI Course Architect* (Curriculum generator).
+  - *Revisionary AI* (Innovation strategist & researcher).
+  - *Nexus Entertainment Generator* (Business concept generator).
+  - *CareBridge AI* (Telehealth platform).
+  - *ApexRoute AI* (Logistics optimization).
+  - *AI Content & Article Generator* (Document to content).
+  - *VitalCare Health & Wellness App* (Supplement recommendations).
+
+**CONVERSATION FLOW:**
+1. **Greeting:** "Hello! I'm Astra. What business challenge are you facing today?"
+2. **Discovery:** The user answers. Ask follow-up probing questions to find their pain point.
+3. **Solution:** Briefly suggest the specific Astratrix tool that solves their problem.
+4. **Close:** "I'd love to show you how this works. Can I book a quick demo for you?" 
+5. **Booking:** If they agree, ask for Name and Preferred Time, then use the 'bookAppointment' tool.
+`,
+          tools: [{ functionDeclarations: [bookAppointmentTool, referToHumanTool] }],
         }
       });
       
@@ -223,7 +282,6 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ onClose }) => {
         outputAudioContextRef.current.close();
         outputAudioContextRef.current = null;
     }
-    // Clean close not available on promise, rely on context destruction
     setIsConnected(false);
   };
 
@@ -231,13 +289,31 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ onClose }) => {
     setMicMuted(!micMuted);
   };
 
+  if (humanHandoff) {
+    return (
+      <div className="flex flex-col h-full bg-slate-50 items-center justify-center p-6 text-center animate-in fade-in zoom-in">
+        <div className="w-24 h-24 bg-azure/10 rounded-full flex items-center justify-center mb-6 animate-pulse">
+            <Headset className="h-10 w-10 text-azure" />
+        </div>
+        <h3 className="text-xl font-bold text-slate-900 mb-2">Connecting to Agent...</h3>
+        <p className="text-gray-600 mb-8">Please hold while we transfer you to a human specialist. Wait time is approximately 2 minutes.</p>
+        <button 
+          onClick={onClose}
+          className="px-6 py-2 border border-red-200 text-red-500 rounded-full hover:bg-red-50 transition-colors"
+        >
+          Cancel Call
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col h-full bg-slate-50">
       {/* Header */}
       <div className="bg-white p-4 border-b border-gray-200 flex justify-between items-center">
         <div className="flex items-center gap-2">
           <Volume2 className={`h-5 w-5 text-azure ${isSpeaking ? 'animate-pulse' : ''}`} />
-          <span className="font-bold text-slate-900">Voice Agent</span>
+          <span className="font-bold text-slate-900">Astra Voice</span>
         </div>
         <button onClick={onClose} className="text-gray-400 hover:text-slate-900">
           <PhoneOff className="h-5 w-5" />
@@ -246,28 +322,36 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ onClose }) => {
 
       {/* Main Visualizer */}
       <div className="flex-1 flex flex-col items-center justify-center p-6 relative overflow-hidden bg-slate-50">
-        {/* Animated Orb */}
+        {/* Avatar Visualizer */}
         <div className="relative mb-8">
-            <div className={`w-32 h-32 rounded-full blur-xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ${isSpeaking ? 'bg-azure/40 scale-150' : 'bg-azure/10 scale-100'}`}></div>
-            <div className={`w-24 h-24 rounded-full border-2 border-azure flex items-center justify-center relative z-10 transition-all duration-200 ${isSpeaking ? 'scale-110 shadow-[0_0_30px_rgba(14,165,233,0.3)]' : 'shadow-md bg-white'}`}>
-                <div className={`w-20 h-20 rounded-full bg-white flex items-center justify-center`}>
-                    {isConnected ? (
-                        <div className="flex gap-1 h-8 items-center">
-                             {/* Fake waveform */}
-                            <div className={`w-1 bg-azure rounded-full transition-all duration-100 ${isSpeaking ? 'h-8 animate-pulse' : 'h-2'}`}></div>
-                            <div className={`w-1 bg-azure rounded-full transition-all duration-100 delay-75 ${isSpeaking ? 'h-12 animate-pulse' : 'h-3'}`}></div>
-                            <div className={`w-1 bg-azure rounded-full transition-all duration-100 delay-150 ${isSpeaking ? 'h-6 animate-pulse' : 'h-2'}`}></div>
-                        </div>
-                    ) : (
-                        <Loader2 className="h-8 w-8 text-azure animate-spin" />
-                    )}
-                </div>
+            <div className={`w-36 h-36 rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ${isSpeaking ? 'bg-azure/30 scale-125' : 'bg-transparent scale-100'}`}></div>
+            <div className={`w-32 h-32 rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 delay-75 ${isSpeaking ? 'bg-azure/20 scale-150' : 'bg-transparent scale-100'}`}></div>
+            
+            <div className={`w-28 h-28 rounded-full border-4 border-white shadow-xl relative z-10 transition-all duration-200 ${isSpeaking ? 'scale-105 border-azure' : 'border-white'}`}>
+                {isConnected ? (
+                   <img 
+                    src={avatarUrl} 
+                    alt="Astra Avatar" 
+                    className="w-full h-full rounded-full object-cover"
+                   />
+                ) : (
+                   <div className="w-full h-full rounded-full bg-white flex items-center justify-center">
+                     <Loader2 className="h-8 w-8 text-azure animate-spin" />
+                   </div>
+                )}
             </div>
+            
+            {/* Status indicator badge */}
+            {isConnected && (
+              <div className={`absolute bottom-0 right-2 z-20 w-6 h-6 rounded-full border-2 border-white flex items-center justify-center ${micMuted ? 'bg-red-500' : 'bg-green-500'}`}>
+                {micMuted ? <MicOff className="w-3 h-3 text-white" /> : <Mic className="w-3 h-3 text-white" />}
+              </div>
+            )}
         </div>
 
         <p className="text-azure font-medium text-lg mb-2">{status}</p>
         <p className="text-gray-500 text-sm text-center max-w-xs">
-          {micMuted ? "Microphone is muted" : "Speak naturally to book an appointment"}
+          {micMuted ? "Microphone is muted" : "Ask about our products, book an appointment, or request a human agent."}
         </p>
 
         {appointmentBooked && (
