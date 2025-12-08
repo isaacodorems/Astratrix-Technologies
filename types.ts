@@ -1,3 +1,4 @@
+
 export interface Solution {
   id: string;
   title: string;
@@ -8,6 +9,9 @@ export interface Solution {
   benefits: string[];
   useCases: string[];
   iconName: string; // Linking to Lucide icons by name
+  rating?: number;
+  reviews?: number;
+  downloads?: string;
 }
 
 export interface BlogPost {

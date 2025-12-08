@@ -1,3 +1,4 @@
+
 import { Solution, BlogPost, FaqItem, NavItem } from './types';
 
 export const NAV_ITEMS: NavItem[] = [
@@ -12,10 +13,10 @@ export const NAV_ITEMS: NavItem[] = [
 export const SOLUTIONS: Solution[] = [
   {
     id: 'fxinsight-ai',
-    title: 'FXInsight AI',
-    category: 'Finance & Trading',
+    title: 'FXInsight',
+    category: 'Finance',
     shortDescription: 'Professional Forex Analysis Powered by AI.',
-    fullDescription: 'FXInsight AI leverages deep learning algorithms to analyze global currency markets in real-time. It processes millions of data points including news sentiment, historical price action, and economic indicators to provide actionable trading insights for African traders and financial institutions.',
+    fullDescription: 'FXInsight leverages deep learning algorithms to analyze global currency markets in real-time. It processes millions of data points including news sentiment, historical price action, and economic indicators to provide actionable trading insights for African traders and financial institutions.',
     features: [
       'Real-time Market Sentiment Analysis',
       'Automated Support & Resistance Detection',
@@ -27,12 +28,15 @@ export const SOLUTIONS: Solution[] = [
       'Access institutional-grade data'
     ],
     useCases: ['Forex Traders', 'Financial Analysts', 'Investment Firms'],
-    iconName: 'BarChart3'
+    iconName: 'BarChart3',
+    rating: 4.8,
+    reviews: 1240,
+    downloads: '10k+'
   },
   {
     id: 'retail-bot-pro',
     title: 'RetailBot Pro',
-    category: 'Automation & Analytics',
+    category: 'Business',
     shortDescription: 'Inventory and customer management for offline shops.',
     fullDescription: 'Designed specifically for Nigerian retail environments with intermittent internet. RetailBot Pro tracks stock levels via camera input, predicts restock needs, and manages customer debts and loyalty programs automatically.',
     features: [
@@ -46,12 +50,15 @@ export const SOLUTIONS: Solution[] = [
       'Modernize customer experience'
     ],
     useCases: ['Supermarkets', 'Pharmacies', 'Hardware Stores'],
-    iconName: 'Store'
+    iconName: 'Store',
+    rating: 4.9,
+    reviews: 856,
+    downloads: '5k+'
   },
   {
     id: 'secure-eye-africa',
     title: 'SecureEye Africa',
-    category: 'Security & Surveillance',
+    category: 'Utilities',
     shortDescription: 'AI-powered surveillance for low-light conditions.',
     fullDescription: 'Enhance your existing CCTV systems with AI that detects unusual behavior, unauthorized access, and safety hazards. Optimized for low-light performance common in areas with power challenges.',
     features: [
@@ -65,12 +72,15 @@ export const SOLUTIONS: Solution[] = [
       'Evidence-ready reporting'
     ],
     useCases: ['Estates', 'Warehouses', 'Corporate Offices'],
-    iconName: 'ShieldCheck'
+    iconName: 'ShieldCheck',
+    rating: 4.7,
+    reviews: 430,
+    downloads: '2k+'
   },
   {
     id: 'railearnin',
     title: 'RAILearnin',
-    category: 'Education Technology',
+    category: 'Education',
     shortDescription: 'Hybrid AI-powered learning platform.',
     fullDescription: 'A hybrid AI-powered learning platform combining the best of Coursera, Udemy, and YouTube Learning. RAILearnin aggregates high-quality resources into structured learning paths tailored to your pace and goals.',
     features: [
@@ -84,12 +94,15 @@ export const SOLUTIONS: Solution[] = [
       'Cost-effective skill acquisition'
     ],
     useCases: ['Students', 'Career Switchers', 'Self-taught Developers'],
-    iconName: 'GraduationCap'
+    iconName: 'GraduationCap',
+    rating: 4.9,
+    reviews: 2100,
+    downloads: '50k+'
   },
   {
     id: 'pawsome-picks',
     title: 'PawSome Picks',
-    category: 'E-commerce & Lifestyle',
+    category: 'Lifestyle',
     shortDescription: 'AI shopping assistant for pet owners.',
     fullDescription: 'A delightful e-commerce store for pet owners featuring an AI shopping assistant. It helps find the perfect treats, toys, and care products for your furry friends based on their breed, age, and dietary requirements.',
     features: [
@@ -103,12 +116,15 @@ export const SOLUTIONS: Solution[] = [
       'Reduce trial-and-error with pet food'
     ],
     useCases: ['Pet Owners', 'Veterinary Clinics', 'Pet Boutiques'],
-    iconName: 'Dog'
+    iconName: 'Dog',
+    rating: 4.6,
+    reviews: 320,
+    downloads: '1k+'
   },
   {
     id: 'tubegenius-ai',
-    title: 'TubeGenius AI',
-    category: 'Media & Creator Tools',
+    title: 'TubeGenius',
+    category: 'Productivity',
     shortDescription: 'Faceless YouTube automation assistant.',
     fullDescription: 'A comprehensive faceless YouTube automation assistant that generates scripts, SEO metadata, thumbnails, and content strategies in seconds. Designed to help creators scale their channels without being on camera.',
     features: [
@@ -122,12 +138,15 @@ export const SOLUTIONS: Solution[] = [
       'Data-driven topic selection'
     ],
     useCases: ['Faceless Content Creators', 'Digital Marketers', 'Agencies'],
-    iconName: 'Clapperboard'
+    iconName: 'Clapperboard',
+    rating: 4.8,
+    reviews: 150,
+    downloads: '500+'
   },
   {
     id: 'ai-course-architect',
-    title: 'AI Course Architect',
-    category: 'Education Technology',
+    title: 'Course Architect',
+    category: 'Education',
     shortDescription: 'Transform documents into course outlines.',
     fullDescription: 'An AI-powered tool that transforms documents, videos, or images into comprehensive and engaging course outlines. Upload your material, and the AI will generate a structured curriculum with learning objectives, key concepts, interactive quizzes, and a final assessment.',
     features: [
@@ -141,12 +160,15 @@ export const SOLUTIONS: Solution[] = [
       'Instantly turn raw content into lessons'
     ],
     useCases: ['Teachers', 'Corporate Trainers', 'Course Creators'],
-    iconName: 'BookOpen'
+    iconName: 'BookOpen',
+    rating: 4.7,
+    reviews: 210,
+    downloads: '3k+'
   },
   {
     id: 'revisionary-ai',
-    title: 'Revisionary AI',
-    category: 'Business Strategy',
+    title: 'Revisionary',
+    category: 'Business',
     shortDescription: 'AI-powered innovation strategist.',
     fullDescription: 'An AI-powered innovation strategist that researches industries, identifies key problems, and proposes cutting-edge AI solutions. It helps businesses stay ahead of the curve by identifying disruption opportunities before competitors do.',
     features: [
@@ -160,12 +182,15 @@ export const SOLUTIONS: Solution[] = [
       'Data-driven strategic planning'
     ],
     useCases: ['Startups', 'Business Consultants', 'R&D Departments'],
-    iconName: 'Lightbulb'
+    iconName: 'Lightbulb',
+    rating: 4.9,
+    reviews: 89,
+    downloads: '200+'
   },
   {
     id: 'nexus-entertainment',
-    title: 'Nexus Entertainment Generator',
-    category: 'Entertainment & Creative',
+    title: 'NexusG',
+    category: 'Entertainment',
     shortDescription: 'AI-driven entertainment concept generator.',
     fullDescription: 'A powerful AI-driven tool that fuses unexpected activities, spaces, and equipment into groundbreaking entertainment business concepts. Perfect for event planners and entrepreneurs looking for the next big thing in leisure.',
     features: [
@@ -179,12 +204,15 @@ export const SOLUTIONS: Solution[] = [
       'Novel business model generation'
     ],
     useCases: ['Event Planners', 'Theme Park Designers', 'Entrepreneurs'],
-    iconName: 'Sparkles'
+    iconName: 'Sparkles',
+    rating: 4.5,
+    reviews: 120,
+    downloads: '1k+'
   },
   {
     id: 'carebridge-ai',
-    title: 'CareBridge AI',
-    category: 'Healthcare Solutions',
+    title: 'CareBridge',
+    category: 'Medical',
     shortDescription: 'AI-augmented telehealth platform.',
     fullDescription: 'A secure, AI-augmented telehealth platform expanding access to quality care across Nigeria. It connects patients with doctors and uses AI triage to prioritize critical cases and assist with preliminary diagnosis.',
     features: [
@@ -198,12 +226,15 @@ export const SOLUTIONS: Solution[] = [
       'Lower healthcare costs'
     ],
     useCases: ['Rural Clinics', 'Patients', 'Health Providers'],
-    iconName: 'Heart'
+    iconName: 'Heart',
+    rating: 4.8,
+    reviews: 560,
+    downloads: '15k+'
   },
   {
     id: 'apexroute-ai',
-    title: 'ApexRoute AI',
-    category: 'Logistics & Operations',
+    title: 'ApexRoute',
+    category: 'Navigation',
     shortDescription: 'Enterprise-grade logistics optimization.',
     fullDescription: 'Enterprise-grade logistics optimization platform for Nigeria featuring AI-driven route planning, fleet management, and real-time analytics. Optimizes delivery routes based on local traffic patterns and road conditions.',
     features: [
@@ -217,12 +248,15 @@ export const SOLUTIONS: Solution[] = [
       'Maximize fleet utilization'
     ],
     useCases: ['Logistics Companies', 'Delivery Fleets', 'Supply Chain Managers'],
-    iconName: 'MapPin'
+    iconName: 'MapPin',
+    rating: 4.7,
+    reviews: 310,
+    downloads: '4k+'
   },
   {
     id: 'ai-content-generator',
-    title: 'AI Content & Article Generator',
-    category: 'Media & Creator Tools',
+    title: 'CARticle',
+    category: 'Productivity',
     shortDescription: 'Transform documents into engaging content.',
     fullDescription: 'An AI-powered application that transforms document text into engaging social media content or well-researched, long-form articles with cited sources. Streamlines the content marketing workflow for businesses and writers.',
     features: [
@@ -236,12 +270,15 @@ export const SOLUTIONS: Solution[] = [
       'High-quality, researched output'
     ],
     useCases: ['Content Marketers', 'Writers', 'Social Media Managers'],
-    iconName: 'FileText'
+    iconName: 'FileText',
+    rating: 4.6,
+    reviews: 450,
+    downloads: '8k+'
   },
   {
     id: 'vitalcare-health',
-    title: 'VitalCare Health & Wellness App',
-    category: 'Healthcare Solutions',
+    title: 'VitalCare',
+    category: 'Health',
     shortDescription: 'Personalized health & supplement recommendations.',
     fullDescription: 'A comprehensive health and wellness application that monitors user health data and provides personalized VitalCare supplement recommendations powered by Gemini. Tracks vitals and suggests lifestyle changes for better living.',
     features: [
@@ -255,7 +292,10 @@ export const SOLUTIONS: Solution[] = [
       'Data-driven supplement choices'
     ],
     useCases: ['Individuals', 'Wellness Coaches', 'Nutritionists'],
-    iconName: 'Activity'
+    iconName: 'Activity',
+    rating: 4.9,
+    reviews: 920,
+    downloads: '20k+'
   }
 ];
 

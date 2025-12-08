@@ -1,3 +1,4 @@
+
 import { GoogleGenAI, Type, FunctionDeclaration, Content } from "@google/genai";
 
 const apiKey = process.env.API_KEY;
@@ -47,18 +48,18 @@ Your goal is to have a natural, human-like conversation to understand the user's
 **KNOWLEDGE BASE:**
 - **Products:** 
   - *RetailBot Pro* (Offline inventory for shops).
-  - *FXInsight AI* (Forex trading).
+  - *FXInsight* (Forex trading).
   - *SecureEye Africa* (AI CCTV).
   - *RAILearnin* (Hybrid AI learning platform).
   - *PawSome Picks* (AI-powered pet store & assistant).
-  - *TubeGenius AI* (YouTube automation & scripts).
-  - *AI Course Architect* (Curriculum generator).
-  - *Revisionary AI* (Innovation strategist & researcher).
-  - *Nexus Entertainment Generator* (Business concept generator).
-  - *CareBridge AI* (Telehealth platform).
-  - *ApexRoute AI* (Logistics optimization).
-  - *AI Content & Article Generator* (Document to content).
-  - *VitalCare Health & Wellness App* (Supplement recommendations).
+  - *TubeGenius* (YouTube automation & scripts).
+  - *Course Architect* (Curriculum generator).
+  - *Revisionary* (Innovation strategist & researcher).
+  - *NexusG* (Business concept generator).
+  - *CareBridge* (Telehealth platform).
+  - *ApexRoute* (Logistics optimization).
+  - *CARticle* (Document to content).
+  - *VitalCare* (Health & supplement recommendations).
 - **Location:** Port Harcourt, Nigeria.
 `;
 
@@ -70,11 +71,17 @@ export const generateAIResponse = async (history: {role: string, text: string}[]
   try {
     const model = 'gemini-2.5-flash';
     
-    // Convert history to 'contents' format
-    const contents: Content[] = history.map(msg => ({
-      role: msg.role === 'ai' ? 'model' : 'user',
-      parts: [{ text: msg.text }]
-    }));
+    // Convert history to 'contents' format, ensuring no empty parts
+    const contents: Content[] = history
+      .filter(msg => msg.text && msg.text.trim().length > 0)
+      .map(msg => ({
+        role: msg.role === 'ai' ? 'model' : 'user',
+        parts: [{ text: msg.text }]
+      }));
+
+    if (contents.length === 0) {
+        return "I'm listening. How can I help?";
+    }
 
     const result = await ai.models.generateContent({
       model: model,
@@ -127,6 +134,6 @@ export const generateAIResponse = async (history: {role: string, text: string}[]
     return result.text || "I apologize, I couldn't generate a response.";
   } catch (error) {
     console.error("Gemini API Error:", error);
-    return "I'm having trouble connecting to the network right now.";
+    return "I'm experiencing a brief connection issue. Please try asking again.";
   }
 };

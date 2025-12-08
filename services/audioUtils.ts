@@ -1,3 +1,4 @@
+
 export const PCM_SAMPLE_RATE = 16000;
 export const AUDIO_SAMPLE_RATE = 24000;
 
@@ -32,23 +33,18 @@ export function float32To16BitPCM(float32Arr: Float32Array): ArrayBuffer {
   return buffer;
 }
 
-export async function decodeAudioData(
+// Optimized to use existing context instead of creating new one per chunk
+export function createAudioBufferFromPCM(
   audioData: Uint8Array,
-  sampleRate: number = AUDIO_SAMPLE_RATE
-): Promise<AudioBuffer> {
-  const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)({
-    sampleRate: sampleRate,
-  });
-  
+  ctx: AudioContext
+): AudioBuffer {
   const pcm16 = new Int16Array(audioData.buffer);
-  const audioBuffer = audioCtx.createBuffer(1, pcm16.length, sampleRate);
+  const audioBuffer = ctx.createBuffer(1, pcm16.length, ctx.sampleRate);
   const channelData = audioBuffer.getChannelData(0);
   
   for (let i = 0; i < pcm16.length; i++) {
     // Normalize 16-bit integer to float [-1.0, 1.0]
     channelData[i] = pcm16[i] / 32768.0;
   }
-  
-  await audioCtx.close();
   return audioBuffer;
 }

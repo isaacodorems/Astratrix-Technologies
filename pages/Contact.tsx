@@ -1,9 +1,20 @@
-import React, { useState } from 'react';
-import { MapPin, Phone, Mail, Send, CheckCircle } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { MapPin, Phone, Mail, Send, CheckCircle, Mic, MicOff } from 'lucide-react';
 
 const Contact: React.FC = () => {
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [status, setStatus] = useState<'idle' | 'success'>('idle');
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef<any>(null);
+
+  useEffect(() => {
+    // Cleanup recognition on unmount
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+    };
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -14,6 +25,80 @@ const Contact: React.FC = () => {
       setStatus('idle');
       setFormData({ name: '', email: '', message: '' });
     }, 5000);
+  };
+
+  const toggleVoiceInput = () => {
+    if (isListening) {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+        setIsListening(false);
+      }
+      return;
+    }
+
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      alert("Your browser does not support voice input. Please try Chrome or Edge.");
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+
+    recognition.onstart = () => {
+      setIsListening(true);
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    recognition.onerror = (event: any) => {
+      console.error("Speech recognition error", event.error);
+      setIsListening(false);
+    };
+
+    let finalTranscript = '';
+
+    recognition.onresult = (event: any) => {
+      let interimTranscript = '';
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          finalTranscript += event.results[i][0].transcript;
+        } else {
+          interimTranscript += event.results[i][0].transcript;
+        }
+      }
+
+      // Update the form data. We append the new transcript to the existing message if it's a new session,
+      // but here we are simplifying to just append what's being said currently.
+      // To prevent overwriting manual typing, we should append to the current value.
+      // However, onresult fires multiple times.
+      // Strategy: We won't strictly append continuously inside the loop to state because it causes jumps.
+      // Instead, we can just insert the *interim* text visualy or just wait for final.
+      // For a smoother UX, let's just set the value based on what we had when we started + current transcript.
+    };
+
+    // A simpler approach for the state update:
+    // We capture the text *before* we started listening.
+    const initialText = formData.message;
+
+    recognition.onresult = (event: any) => {
+      let currentTranscript = '';
+      for (let i = 0; i < event.results.length; ++i) {
+         currentTranscript += event.results[i][0].transcript;
+      }
+      
+      // Add a space if there was text before and it doesn't end in whitespace
+      const prefix = initialText + (initialText && !initialText.endsWith(' ') ? ' ' : '');
+      setFormData(prev => ({ ...prev, message: prefix + currentTranscript }));
+    };
+
+    recognitionRef.current = recognition;
+    recognition.start();
   };
 
   return (
@@ -110,14 +195,29 @@ const Contact: React.FC = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Message</label>
-                  <textarea
-                    rows={4}
-                    required
-                    value={formData.message}
-                    onChange={e => setFormData({...formData, message: e.target.value})}
-                    className="w-full bg-slate-50 border border-gray-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-azure focus:ring-1 focus:ring-azure transition-all placeholder:text-gray-400"
-                    placeholder="How can we help?"
-                  ></textarea>
+                  <div className="relative">
+                    <textarea
+                      rows={4}
+                      required
+                      value={formData.message}
+                      onChange={e => setFormData({...formData, message: e.target.value})}
+                      className="w-full bg-slate-50 border border-gray-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-azure focus:ring-1 focus:ring-azure transition-all placeholder:text-gray-400 pr-12"
+                      placeholder="How can we help? (Type or click mic to speak)"
+                    ></textarea>
+                    
+                    <button
+                      type="button"
+                      onClick={toggleVoiceInput}
+                      className={`absolute bottom-3 right-3 p-2 rounded-full transition-all duration-200 ${
+                        isListening 
+                          ? 'bg-red-500 text-white shadow-lg shadow-red-500/30 animate-pulse' 
+                          : 'bg-gray-100 text-gray-500 hover:bg-azure hover:text-white'
+                      }`}
+                      title={isListening ? "Stop Recording" : "Start Voice Input"}
+                    >
+                      {isListening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
+                    </button>
+                  </div>
                 </div>
                 <button
                   type="submit"

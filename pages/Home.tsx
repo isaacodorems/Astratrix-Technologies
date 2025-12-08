@@ -55,7 +55,7 @@ const Home: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <FeatureCard 
               icon={<Bot />} 
-              title="AI Automation & BI" 
+              title="AI Automation" 
               desc="Streamline operations and gain deep insights from your data automatically." 
             />
             <FeatureCard 
@@ -148,7 +148,7 @@ const Home: React.FC = () => {
 const FeatureCard: React.FC<{ icon: React.ReactNode, title: string, desc: string }> = ({ icon, title, desc }) => (
   <div className="bg-white border border-gray-200 p-8 rounded-2xl hover:border-azure/50 hover:shadow-lg transition-all duration-300 group shadow-sm">
     <div className="h-12 w-12 bg-azure/10 rounded-xl flex items-center justify-center text-azure mb-6 group-hover:bg-azure group-hover:text-white transition-colors duration-300">
-      {React.cloneElement(icon as React.ReactElement, { size: 24 })}
+      {React.cloneElement(icon as React.ReactElement, { size: 24 } as any)}
     </div>
     <h3 className="text-xl font-bold text-slate-900 mb-3">{title}</h3>
     <p className="text-gray-600 leading-relaxed">{desc}</p>

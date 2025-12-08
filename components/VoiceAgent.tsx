@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Mic, MicOff, PhoneOff, CalendarCheck, Loader2, Volume2, Headset } from 'lucide-react';
 import { GoogleGenAI, LiveServerMessage, Modality, Type, FunctionDeclaration } from "@google/genai";
-import { base64ToUint8Array, float32To16BitPCM, arrayBufferToBase64, decodeAudioData, PCM_SAMPLE_RATE, AUDIO_SAMPLE_RATE } from '../services/audioUtils';
+import { base64ToUint8Array, float32To16BitPCM, arrayBufferToBase64, createAudioBufferFromPCM, PCM_SAMPLE_RATE, AUDIO_SAMPLE_RATE } from '../services/audioUtils';
 
 interface VoiceAgentProps {
   onClose: () => void;
@@ -18,7 +18,7 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ onClose, avatarUrl = DEFAULT_AV
   const [appointmentBooked, setAppointmentBooked] = useState<string | null>(null);
   const [humanHandoff, setHumanHandoff] = useState(false);
 
-  // Refs for audio handling
+  // Refs for audio handling and state access in callbacks
   const audioContextRef = useRef<AudioContext | null>(null);
   const mediaStreamRef = useRef<MediaStream | null>(null);
   const processorRef = useRef<ScriptProcessorNode | null>(null);
@@ -27,6 +27,10 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ onClose, avatarUrl = DEFAULT_AV
   const sessionPromiseRef = useRef<Promise<any> | null>(null);
   const outputAudioContextRef = useRef<AudioContext | null>(null);
   const sourcesRef = useRef<Set<AudioBufferSourceNode>>(new Set());
+  
+  // Refs for state variables to ensure access in closures (onaudioprocess)
+  const micMutedRef = useRef(false);
+  const humanHandoffRef = useRef(false);
 
   useEffect(() => {
     startSession();
@@ -87,7 +91,7 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ onClose, avatarUrl = DEFAULT_AV
       // Tool 2: Refer to Human Agent
       const referToHumanTool: FunctionDeclaration = {
         name: "referToHuman",
-        description: "Transfer the call to a human agent. MANDATORY to call this if: 1. User asks for a human. 2. You fail to understand the user twice.",
+        description: "Transfer the call to a human agent. MANDATORY to call this if: 1. User explicitly asks for a human/agent. 2. You fail to understand or satisfy the user's request after two attempts.",
         parameters: {
           type: Type.OBJECT,
           properties: {
@@ -107,7 +111,8 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ onClose, avatarUrl = DEFAULT_AV
             
             // Start processing audio input
             processor.onaudioprocess = (e) => {
-              if (micMuted) return; // Simple software mute
+              // Check refs instead of state to avoid stale closures
+              if (micMutedRef.current || humanHandoffRef.current) return;
               
               const inputData = e.inputBuffer.getChannelData(0);
               const pcm16 = float32To16BitPCM(inputData);
@@ -120,6 +125,8 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ onClose, avatarUrl = DEFAULT_AV
                         data: base64Data
                     }
                  });
+              }).catch(err => {
+                  console.error("Session send error:", err);
               });
             };
 
@@ -137,7 +144,8 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ onClose, avatarUrl = DEFAULT_AV
               nextStartTimeRef.current = Math.max(nextStartTimeRef.current, ctx.currentTime);
               
               const audioBytes = base64ToUint8Array(base64Audio);
-              const audioBuffer = await decodeAudioData(audioBytes, AUDIO_SAMPLE_RATE);
+              // Use optimized buffer creation with existing context
+              const audioBuffer = createAudioBufferFromPCM(audioBytes, ctx);
               
               const bufferSource = ctx.createBufferSource();
               bufferSource.buffer = audioBuffer;
@@ -147,7 +155,10 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ onClose, avatarUrl = DEFAULT_AV
                  sourcesRef.current.delete(bufferSource);
                  if (sourcesRef.current.size === 0) {
                     setIsSpeaking(false);
-                    setStatus("Listening...");
+                    // Only reset status if we haven't handed off
+                    if (!humanHandoffRef.current) {
+                        setStatus("Listening...");
+                    }
                  }
               };
               
@@ -162,7 +173,9 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ onClose, avatarUrl = DEFAULT_AV
               sourcesRef.current.clear();
               nextStartTimeRef.current = 0;
               setIsSpeaking(false);
-              setStatus("Listening...");
+              if (!humanHandoffRef.current) {
+                  setStatus("Listening...");
+              }
             }
 
             // Handle Tool Calls
@@ -185,6 +198,7 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ onClose, avatarUrl = DEFAULT_AV
                     } else if (fc.name === 'referToHuman') {
                         setStatus("Transferring call...");
                         setHumanHandoff(true);
+                        humanHandoffRef.current = true; // Update ref to stop audio input
                         
                         sessionPromise.then(session => {
                             session.sendToolResponse({
@@ -204,7 +218,7 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ onClose, avatarUrl = DEFAULT_AV
             setStatus("Disconnected");
           },
           onerror: (err) => {
-            console.error(err);
+            console.error("Live API Error:", err);
             setStatus("Connection Error");
           }
         },
@@ -216,38 +230,24 @@ Your goal is to have a natural, human-like conversation to understand the user's
 **CRITICAL GUARDRAILS (DO NOT VIOLATE):**
 1. **NO REPETITION:** Do NOT repeat your name ("I am Astra") or the full company description in every response. Introduce yourself ONLY ONCE at the start.
 2. **BE HUMAN:** Do not sound like a robot reading a script. Use varied phrasing.
-3. **LISTEN FIRST:** Do not list all products immediately. Ask probing questions to understand the user's needs first (e.g., "Do you own a retail store?", "Are you interested in trading automation?").
-4. **CONCISE:** Keep responses short (maximum 2 sentences). This is a voice conversation.
+3. **LISTEN FIRST:** Do not list all products immediately. Ask probing questions to understand the user's needs first.
+4. **CONCISE:** Keep responses short (maximum 2 sentences).
 
-**ESCALATION PROTOCOL:**
+**ESCALATION PROTOCOL (MANDATORY):**
 You **MUST** call the 'referToHuman' tool immediately if:
-- The user explicitly asks for a human, agent, or person.
+- The user explicitly asks for a "human", "agent", "person", or "operator".
 - You have misunderstood the user's intent or failed to provide a relevant answer TWICE in a row.
-- The user expresses frustration.
+- The user expresses frustration or anger.
 
 **KNOWLEDGE BASE:**
 - **Who we are:** Astratrix Technologies, based in Port Harcourt, Nigeria. We build AI for African businesses.
-- **Products:** 
-  - *RetailBot Pro* (Offline inventory & theft prevention for shops).
-  - *FXInsight AI* (Forex trading analytics).
-  - *SecureEye Africa* (AI Security/CCTV).
-  - *RAILearnin* (Hybrid AI learning platform).
-  - *PawSome Picks* (AI-powered pet store & assistant).
-  - *TubeGenius AI* (YouTube automation & scripts).
-  - *AI Course Architect* (Curriculum generator).
-  - *Revisionary AI* (Innovation strategist & researcher).
-  - *Nexus Entertainment Generator* (Business concept generator).
-  - *CareBridge AI* (Telehealth platform).
-  - *ApexRoute AI* (Logistics optimization).
-  - *AI Content & Article Generator* (Document to content).
-  - *VitalCare Health & Wellness App* (Supplement recommendations).
+- **Products:** RetailBot Pro, FXInsight, SecureEye Africa, RAILearnin, PawSome Picks, TubeGenius, Course Architect, Revisionary, NexusG, CareBridge, ApexRoute, CARticle, VitalCare.
 
 **CONVERSATION FLOW:**
 1. **Greeting:** "Hello! I'm Astra. What business challenge are you facing today?"
-2. **Discovery:** The user answers. Ask follow-up probing questions to find their pain point.
-3. **Solution:** Briefly suggest the specific Astratrix tool that solves their problem.
-4. **Close:** "I'd love to show you how this works. Can I book a quick demo for you?" 
-5. **Booking:** If they agree, ask for Name and Preferred Time, then use the 'bookAppointment' tool.
+2. **Discovery:** Ask follow-up probing questions.
+3. **Solution:** Briefly suggest the specific Astratrix tool.
+4. **Close/Booking:** "Can I book a quick demo for you?" -> If yes, collect Name/Time -> Call 'bookAppointment'.
 `,
           tools: [{ functionDeclarations: [bookAppointmentTool, referToHumanTool] }],
         }
@@ -286,7 +286,11 @@ You **MUST** call the 'referToHuman' tool immediately if:
   };
 
   const toggleMute = () => {
-    setMicMuted(!micMuted);
+    setMicMuted(prev => {
+        const next = !prev;
+        micMutedRef.current = next; // Sync ref for audio loop
+        return next;
+    });
   };
 
   if (humanHandoff) {

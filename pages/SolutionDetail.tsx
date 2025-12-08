@@ -1,7 +1,9 @@
+
 import React from 'react';
 import { useParams, Navigate, NavLink } from 'react-router-dom';
-import { Check, ArrowRight } from 'lucide-react';
+import { Check, ArrowRight, Download, Share2 } from 'lucide-react';
 import { SOLUTIONS } from '../constants';
+import { getSolutionLogo } from '../components/SolutionLogos';
 
 const SolutionDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -13,16 +15,44 @@ const SolutionDetail: React.FC = () => {
 
   return (
     <div className="animate-in fade-in duration-500 pb-20">
-      {/* Header */}
-      <div className="bg-seagreen border-b border-gray-200 py-20 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <span className="text-azure font-bold tracking-wide uppercase mb-4 block">{solution.category}</span>
-          <h1 className="text-4xl md:text-6xl font-display font-bold text-slate-900 mb-6">
-            {solution.title}
-          </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            {solution.shortDescription}
-          </p>
+      {/* Hero Header */}
+      <div className="relative overflow-hidden bg-slate-50 border-b border-gray-200 pt-32 pb-20 px-4">
+        {/* Blurred Background Logo Watermark */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] opacity-[0.03] pointer-events-none grayscale">
+           {getSolutionLogo(solution.id, "w-full h-full", solution.iconName)}
+        </div>
+
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
+            {/* Main App Icon */}
+            <div className="w-40 h-40 rounded-3xl overflow-hidden shadow-2xl border-4 border-white flex-shrink-0">
+               {getSolutionLogo(solution.id, "w-full h-full", solution.iconName)}
+            </div>
+            
+            <div className="text-center md:text-left flex-1">
+              <h1 className="text-4xl md:text-5xl font-display font-bold text-slate-900 mb-2">
+                {solution.title}
+              </h1>
+              <p className="text-azure font-bold tracking-wide uppercase mb-4 text-sm">{solution.category}</p>
+              
+              <p className="text-xl text-gray-600 max-w-2xl mb-6">
+                {solution.shortDescription}
+              </p>
+
+              <div className="flex items-center justify-center md:justify-start gap-4">
+                 <NavLink 
+                    to="/contact" 
+                    className="px-8 py-3 bg-azure text-white rounded-full font-bold hover:bg-ocean transition-all shadow-lg shadow-azure/30 hover:-translate-y-1 flex items-center gap-2"
+                  >
+                    Get {solution.title}
+                    <Download className="h-4 w-4" />
+                 </NavLink>
+                 <button className="p-3 rounded-full bg-white border border-gray-200 text-gray-500 hover:text-azure hover:border-azure transition-colors">
+                    <Share2 className="h-5 w-5" />
+                 </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -65,6 +95,28 @@ const SolutionDetail: React.FC = () => {
 
           {/* Sidebar */}
           <div className="space-y-8">
+            <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+              <h3 className="text-lg font-bold text-slate-900 mb-4">Information</h3>
+              <div className="space-y-4 text-sm">
+                <div className="flex justify-between border-b border-gray-100 pb-2">
+                  <span className="text-gray-500">Provider</span>
+                  <span className="text-slate-900 font-medium">Astratrix Tech</span>
+                </div>
+                <div className="flex justify-between border-b border-gray-100 pb-2">
+                  <span className="text-gray-500">Category</span>
+                  <span className="text-slate-900 font-medium">{solution.category}</span>
+                </div>
+                <div className="flex justify-between border-b border-gray-100 pb-2">
+                  <span className="text-gray-500">Rating</span>
+                  <span className="text-slate-900 font-medium">{solution.rating} / 5.0</span>
+                </div>
+                <div className="flex justify-between border-b border-gray-100 pb-2">
+                  <span className="text-gray-500">Downloads</span>
+                  <span className="text-slate-900 font-medium">{solution.downloads}</span>
+                </div>
+              </div>
+            </div>
+
             <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
               <h3 className="text-lg font-bold text-slate-900 mb-4">Use Cases</h3>
               <ul className="space-y-3">
