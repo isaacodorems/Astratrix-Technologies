@@ -12,6 +12,7 @@ export interface Solution {
   rating?: number;
   reviews?: number;
   downloads?: string;
+  featureImage?: string;
 }
 
 export interface BlogPost {
@@ -20,6 +21,7 @@ export interface BlogPost {
   excerpt: string;
   date: string;
   category: string;
+  imageUrl?: string;
 }
 
 export interface FaqItem {

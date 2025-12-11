@@ -15,7 +15,7 @@ const GeminiChatWidget: React.FC = () => {
   const [mode, setMode] = useState<'chat' | 'voice'>('chat');
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'ai', text: "Hi there! I'm Astra. How can I help you grow your business today?" }
+    { role: 'ai', text: "Hello! I'm Astra. What business challenge are you facing today?" }
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { Menu, X, MessageSquare } from 'lucide-react';
@@ -163,7 +164,7 @@ const Layout: React.FC = () => {
               <address className="text-gray-600 not-italic space-y-2">
                 <p>26 Health Center Road</p>
                 <p>Okuru, Port Harcourt, Nigeria</p>
-                <p className="mt-4 text-azure font-bold">+234 800 ASTRATRIX</p>
+                <p className="mt-4 text-azure font-bold">+234 816051409601</p>
               </address>
             </div>
           </div>

@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Star, Search } from 'lucide-react';
+import { Star, Search, ArrowRight } from 'lucide-react';
 import { SOLUTIONS } from '../constants';
 import { getSolutionLogo } from '../components/SolutionLogos';
 
@@ -32,7 +32,7 @@ const Solutions: React.FC = () => {
       setTimeout(() => {
         setFeaturedIndex((prev) => (prev + 1) % FEATURED_APP_IDS.length);
         setIsAnimating(false);
-      }, 300); // Wait for fade out before switching
+      }, 500); // Transition duration
     }, 5000);
 
     return () => clearInterval(timer);
@@ -42,12 +42,12 @@ const Solutions: React.FC = () => {
 
   const getGradient = (id: string) => {
     switch (id) {
-      case 'railearnin': return 'from-orange-500 to-red-600';
-      case 'retail-bot-pro': return 'from-red-500 to-rose-600';
-      case 'vitalcare-health': return 'from-emerald-400 to-teal-600';
-      case 'fxinsight-ai': return 'from-blue-600 to-cyan-500';
-      case 'nexus-entertainment': return 'from-violet-600 to-fuchsia-600';
-      default: return 'from-slate-700 to-slate-900';
+      case 'railearnin': return 'from-orange-600/90 to-red-700/90';
+      case 'retail-bot-pro': return 'from-red-600/90 to-rose-700/90';
+      case 'vitalcare-health': return 'from-emerald-500/90 to-teal-700/90';
+      case 'fxinsight-ai': return 'from-blue-600/90 to-cyan-600/90';
+      case 'nexus-entertainment': return 'from-violet-600/90 to-fuchsia-700/90';
+      default: return 'from-slate-700/90 to-slate-900/90';
     }
   };
 
@@ -55,16 +55,16 @@ const Solutions: React.FC = () => {
     <div className="animate-in fade-in duration-500 bg-white min-h-screen">
       
       {/* App Store Header */}
-      <div className="border-b border-gray-100 bg-white/80 backdrop-blur-xl sticky top-20 z-30">
+      <div className="border-b border-gray-100 bg-white/80 backdrop-blur-xl sticky top-20 z-30 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <h1 className="text-3xl font-display font-bold text-slate-900">Astratrix Store</h1>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <h1 className="text-3xl font-display font-bold text-slate-900 tracking-tight">Astratrix Store</h1>
+            <div className="relative group">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-azure transition-colors" />
               <input 
                 type="text" 
                 placeholder="Search apps, tools & services" 
-                className="bg-slate-100 border-none rounded-lg pl-10 pr-4 py-2 text-sm w-full md:w-64 focus:ring-2 focus:ring-azure/20 text-slate-900"
+                className="bg-slate-100 border-none rounded-full pl-10 pr-4 py-2.5 text-sm w-full md:w-72 focus:ring-2 focus:ring-azure/20 focus:bg-white transition-all shadow-inner"
               />
             </div>
           </div>
@@ -75,10 +75,10 @@ const Solutions: React.FC = () => {
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                className={`px-4 py-1.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all ${
+                className={`px-5 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all duration-300 ${
                   activeCategory === cat 
-                    ? 'bg-slate-900 text-white shadow-md' 
-                    : 'bg-white text-gray-500 hover:bg-gray-100 border border-gray-200'
+                    ? 'bg-slate-900 text-white shadow-lg transform scale-105' 
+                    : 'bg-white text-gray-500 hover:bg-gray-50 border border-gray-200 hover:border-gray-300'
                 }`}
               >
                 {cat}
@@ -91,14 +91,14 @@ const Solutions: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Featured App Carousel */}
         {activeCategory === 'All' && (
-          <div className="mb-12">
-            <div className="flex items-center justify-between mb-4 px-1">
-               <h2 className="text-xl font-bold text-slate-900">Featured Apps</h2>
-               <div className="flex gap-1">
+          <div className="mb-16">
+            <div className="flex items-center justify-between mb-6 px-1">
+               <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Featured Today</h2>
+               <div className="flex gap-1.5">
                  {FEATURED_APP_IDS.map((_, idx) => (
                    <div 
                      key={idx} 
-                     className={`h-1.5 rounded-full transition-all duration-300 ${idx === featuredIndex ? 'w-6 bg-slate-900' : 'w-1.5 bg-gray-300'}`} 
+                     className={`h-1.5 rounded-full transition-all duration-500 ${idx === featuredIndex ? 'w-8 bg-slate-900' : 'w-1.5 bg-gray-200'}`} 
                    />
                  ))}
                </div>
@@ -106,47 +106,64 @@ const Solutions: React.FC = () => {
 
             <NavLink 
               to={`/solutions/${featuredSolution.id}`} 
-              className="block relative h-80 rounded-3xl overflow-hidden group shadow-lg transition-all duration-500"
+              className="block relative h-[420px] rounded-[2rem] overflow-hidden group shadow-2xl transition-all duration-500 hover:shadow-3xl transform hover:-translate-y-1"
             >
-               {/* Animated Background Gradient */}
-               <div className={`absolute inset-0 bg-gradient-to-br ${getGradient(featuredSolution.id)} transition-opacity duration-500`}></div>
+               {/* Background Image Layer */}
+               <div 
+                  className={`absolute inset-0 bg-cover bg-center transition-all duration-700 transform scale-105 group-hover:scale-100 ${isAnimating ? 'opacity-0' : 'opacity-100'}`}
+                  style={{ backgroundImage: `url(${featuredSolution.featureImage})` }}
+               />
+
+               {/* Gradient Overlay Layer */}
+               <div className={`absolute inset-0 bg-gradient-to-r ${getGradient(featuredSolution.id)} mix-blend-multiply opacity-90 transition-opacity duration-500`}></div>
                
+               {/* Text Protection Gradient */}
+               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+
                {/* Background Logo Watermark */}
-               <div className={`absolute -right-20 -bottom-20 w-96 h-96 opacity-10 transform rotate-12 transition-all duration-500 scale-100 group-hover:scale-110 group-hover:opacity-20`}>
+               <div className={`absolute -right-20 -bottom-20 w-96 h-96 opacity-10 transform rotate-12 transition-all duration-700 scale-100 group-hover:scale-110 group-hover:opacity-20`}>
                  {getSolutionLogo(featuredSolution.id, "w-full h-full", featuredSolution.iconName)}
                </div>
-
-               <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors"></div>
                
                {/* Content with Fade Transition */}
-               <div className={`absolute bottom-0 left-0 p-8 text-white transition-opacity duration-300 ${isAnimating ? 'opacity-0' : 'opacity-100'}`}>
-                 <div className="flex items-center gap-4 mb-3">
-                   {/* Small Icon next to title */}
-                   <div className="w-12 h-12 rounded-xl overflow-hidden shadow-lg border border-white/20">
+               <div className={`absolute bottom-0 left-0 p-10 text-white transition-all duration-500 ${isAnimating ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'}`}>
+                 <div className="flex items-center gap-5 mb-5">
+                   {/* App Icon */}
+                   <div className="w-16 h-16 rounded-2xl overflow-hidden shadow-2xl border-2 border-white/20 bg-white/10 backdrop-blur-md">
                       {getSolutionLogo(featuredSolution.id, "w-full h-full", featuredSolution.iconName)}
                    </div>
-                   <span className="text-xs font-bold uppercase tracking-widest bg-white/20 backdrop-blur-md px-3 py-1 rounded-full">
-                      {featuredSolution.category}
-                   </span>
+                   <div className="flex flex-col items-start gap-2">
+                     <span className="text-xs font-bold uppercase tracking-[0.2em] bg-white/20 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/10">
+                        {featuredSolution.category}
+                     </span>
+                     <div className="flex text-amber-400 gap-0.5">
+                        {[...Array(5)].map((_, i) => (
+                           <Star key={i} size={14} fill="currentColor" strokeWidth={0} />
+                        ))}
+                     </div>
+                   </div>
                  </div>
-                 <h3 className="text-4xl font-bold mb-2">{featuredSolution.title}</h3>
-                 <p className="text-lg text-white/90 max-w-lg line-clamp-2">
+                 <h3 className="text-5xl font-display font-bold mb-3 leading-tight tracking-tight">{featuredSolution.title}</h3>
+                 <p className="text-lg text-white/90 max-w-xl line-clamp-2 font-medium leading-relaxed">
                     {featuredSolution.fullDescription}
                  </p>
+                 <div className="mt-6 flex items-center gap-2 text-sm font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-2 group-hover:translate-y-0">
+                    View Details <ArrowRight className="w-4 h-4" />
+                 </div>
                </div>
             </NavLink>
           </div>
         )}
 
         {/* Apps Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-10">
           {filteredSolutions.map((solution) => (
             <div 
               key={solution.id} 
-              className="flex gap-4 p-4 rounded-3xl hover:bg-slate-50 transition-colors group border border-transparent hover:border-gray-100"
+              className="flex gap-5 p-5 rounded-[2rem] hover:bg-slate-50 transition-all duration-300 group border border-transparent hover:border-gray-100 hover:shadow-lg"
             >
               {/* App Icon */}
-              <NavLink to={`/solutions/${solution.id}`} className="flex-shrink-0 w-28 h-28 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+              <NavLink to={`/solutions/${solution.id}`} className="flex-shrink-0 w-24 h-24 rounded-[1.2rem] overflow-hidden shadow-md group-hover:shadow-xl transition-all duration-300 transform group-hover:scale-105">
                 {getSolutionLogo(solution.id, "w-full h-full", solution.iconName)}
               </NavLink>
 
@@ -155,8 +172,8 @@ const Solutions: React.FC = () => {
                 <div>
                   <div className="flex justify-between items-start">
                     <NavLink to={`/solutions/${solution.id}`}>
-                      <h3 className="text-lg font-bold text-slate-900 leading-tight mb-1">{solution.title}</h3>
-                      <p className="text-xs text-gray-500 font-medium">{solution.category}</p>
+                      <h3 className="text-lg font-bold text-slate-900 leading-tight mb-1 group-hover:text-azure transition-colors">{solution.title}</h3>
+                      <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">{solution.category}</p>
                     </NavLink>
                   </div>
                   <p className="text-sm text-gray-500 line-clamp-2 mt-2 leading-relaxed">
@@ -164,21 +181,17 @@ const Solutions: React.FC = () => {
                   </p>
                 </div>
 
-                <div className="flex items-center justify-between mt-3">
+                <div className="flex items-center justify-between mt-4">
                    {/* Rating */}
-                   <div className="flex items-center gap-1">
-                     <div className="flex text-amber-400">
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} size={12} fill={i < Math.floor(solution.rating || 5) ? "currentColor" : "none"} strokeWidth={i < Math.floor(solution.rating || 5) ? 0 : 2} />
-                        ))}
-                     </div>
-                     <span className="text-xs text-gray-400">({solution.reviews})</span>
+                   <div className="flex items-center gap-1.5 bg-gray-50 px-2 py-1 rounded-md">
+                     <Star size={12} className="text-gray-400" fill="currentColor" />
+                     <span className="text-xs font-bold text-gray-600">{solution.rating || '4.8'}</span>
                    </div>
 
                    {/* Get Button */}
                    <NavLink 
                      to={`/solutions/${solution.id}`} 
-                     className="bg-slate-100 hover:bg-slate-200 text-azure font-bold text-xs px-5 py-1.5 rounded-full transition-colors uppercase tracking-wide"
+                     className="bg-slate-100 hover:bg-azure hover:text-white text-azure font-bold text-xs px-6 py-2 rounded-full transition-all uppercase tracking-wider shadow-sm hover:shadow-md"
                    >
                      GET
                    </NavLink>

@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { MapPin, Phone, Mail, Send, CheckCircle, Mic, MicOff } from 'lucide-react';
 
@@ -61,29 +62,7 @@ const Contact: React.FC = () => {
       setIsListening(false);
     };
 
-    let finalTranscript = '';
-
-    recognition.onresult = (event: any) => {
-      let interimTranscript = '';
-      for (let i = event.resultIndex; i < event.results.length; ++i) {
-        if (event.results[i].isFinal) {
-          finalTranscript += event.results[i][0].transcript;
-        } else {
-          interimTranscript += event.results[i][0].transcript;
-        }
-      }
-
-      // Update the form data. We append the new transcript to the existing message if it's a new session,
-      // but here we are simplifying to just append what's being said currently.
-      // To prevent overwriting manual typing, we should append to the current value.
-      // However, onresult fires multiple times.
-      // Strategy: We won't strictly append continuously inside the loop to state because it causes jumps.
-      // Instead, we can just insert the *interim* text visualy or just wait for final.
-      // For a smoother UX, let's just set the value based on what we had when we started + current transcript.
-    };
-
-    // A simpler approach for the state update:
-    // We capture the text *before* we started listening.
+    // Use initial text to append properly
     const initialText = formData.message;
 
     recognition.onresult = (event: any) => {
@@ -92,7 +71,6 @@ const Contact: React.FC = () => {
          currentTranscript += event.results[i][0].transcript;
       }
       
-      // Add a space if there was text before and it doesn't end in whitespace
       const prefix = initialText + (initialText && !initialText.endsWith(' ') ? ' ' : '');
       setFormData(prev => ({ ...prev, message: prefix + currentTranscript }));
     };
@@ -129,20 +107,28 @@ const Contact: React.FC = () => {
                 <h3 className="text-lg font-bold text-slate-900 mb-4">Phone</h3>
                 <div className="flex items-center gap-3 text-gray-600">
                   <Phone className="h-5 w-5 text-azure" />
-                  <span>+234 800 ASTRATRIX</span>
+                  <span>+234 816051409601</span>
                 </div>
               </div>
               <div>
                 <h3 className="text-lg font-bold text-slate-900 mb-4">Email</h3>
                 <div className="flex items-center gap-3 text-gray-600">
                   <Mail className="h-5 w-5 text-azure" />
-                  <span>hello@astratrix.cc</span>
+                  <span>ehtitagroup@gmail.com</span>
                 </div>
               </div>
             </div>
 
-            <div className="bg-slate-50 rounded-2xl p-8 border border-gray-200 h-64 flex items-center justify-center text-gray-500">
-              <p>[Map Placeholder: Port Harcourt, Nigeria]</p>
+            {/* Replaced placeholder with Image */}
+            <div className="rounded-2xl overflow-hidden border border-gray-200 h-64 shadow-md relative group">
+              <img 
+                 src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=800"
+                 alt="Astratrix Office Building"
+                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent flex items-end p-6">
+                 <p className="text-white font-bold text-lg">Port Harcourt HQ</p>
+              </div>
             </div>
           </div>
 

@@ -31,7 +31,8 @@ export const SOLUTIONS: Solution[] = [
     iconName: 'BarChart3',
     rating: 4.8,
     reviews: 1240,
-    downloads: '10k+'
+    downloads: '10k+',
+    featureImage: 'https://images.unsplash.com/photo-1633158829585-23ba8f7c8caf?auto=format&fit=crop&q=80&w=1200'
   },
   {
     id: 'retail-bot-pro',
@@ -53,7 +54,8 @@ export const SOLUTIONS: Solution[] = [
     iconName: 'Store',
     rating: 4.9,
     reviews: 856,
-    downloads: '5k+'
+    downloads: '5k+',
+    featureImage: 'https://images.unsplash.com/photo-1556740758-90de374c12ad?auto=format&fit=crop&q=80&w=1200'
   },
   {
     id: 'secure-eye-africa',
@@ -97,7 +99,8 @@ export const SOLUTIONS: Solution[] = [
     iconName: 'GraduationCap',
     rating: 4.9,
     reviews: 2100,
-    downloads: '50k+'
+    downloads: '50k+',
+    featureImage: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=1200'
   },
   {
     id: 'pawsome-picks',
@@ -207,7 +210,8 @@ export const SOLUTIONS: Solution[] = [
     iconName: 'Sparkles',
     rating: 4.5,
     reviews: 120,
-    downloads: '1k+'
+    downloads: '1k+',
+    featureImage: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&q=80&w=1200'
   },
   {
     id: 'carebridge-ai',
@@ -295,7 +299,8 @@ export const SOLUTIONS: Solution[] = [
     iconName: 'Activity',
     rating: 4.9,
     reviews: 920,
-    downloads: '20k+'
+    downloads: '20k+',
+    featureImage: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80&w=1200'
   }
 ];
 
@@ -305,28 +310,32 @@ export const BLOG_POSTS: BlogPost[] = [
     title: 'Why Nigerian Businesses Without Online Presence Need AI in 2025',
     excerpt: 'The digital divide is shrinking. Learn how AI tools are now designed to work offline and boost your physical store operations.',
     date: 'Oct 12, 2024',
-    category: 'Business Strategy'
+    category: 'Business Strategy',
+    imageUrl: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&q=80&w=800'
   },
   {
     id: '2',
     title: 'How AI Helps Small African Businesses Save Time and Money',
     excerpt: 'Automation isn\'t just for big tech. Discover simple tools that automate bookkeeping, inventory, and customer follow-ups.',
     date: 'Oct 15, 2024',
-    category: 'Automation'
+    category: 'Automation',
+    imageUrl: 'https://images.unsplash.com/photo-1556742049-0cfed4f7a07d?auto=format&fit=crop&q=80&w=800'
   },
   {
     id: '3',
     title: 'Best AI Tools for Retail Shops in Nigeria',
     excerpt: 'A curated list of affordable AI solutions that integrate with local payment gateways and operational styles.',
     date: 'Oct 19, 2024',
-    category: 'Tools & Reviews'
+    category: 'Tools & Reviews',
+    imageUrl: 'https://images.unsplash.com/photo-1556740738-b6a63e27c4df?auto=format&fit=crop&q=80&w=800'
   },
   {
     id: '4',
     title: 'AI Trends Transforming Africa',
     excerpt: 'From FinTech to AgriTech, see how artificial intelligence is solving unique continental challenges.',
     date: 'Oct 22, 2024',
-    category: 'Trends'
+    category: 'Trends',
+    imageUrl: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=800'
   }
 ];
 
