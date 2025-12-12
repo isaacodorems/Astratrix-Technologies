@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Star, Search, ArrowRight } from 'lucide-react';
+import { Search, ArrowRight } from 'lucide-react';
 import { SOLUTIONS } from '../constants';
 import { getSolutionLogo } from '../components/SolutionLogos';
 
@@ -136,11 +136,6 @@ const Solutions: React.FC = () => {
                      <span className="text-xs font-bold uppercase tracking-[0.2em] bg-white/20 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/10">
                         {featuredSolution.category}
                      </span>
-                     <div className="flex text-amber-400 gap-0.5">
-                        {[...Array(5)].map((_, i) => (
-                           <Star key={i} size={14} fill="currentColor" strokeWidth={0} />
-                        ))}
-                     </div>
                    </div>
                  </div>
                  <h3 className="text-5xl font-display font-bold mb-3 leading-tight tracking-tight">{featuredSolution.title}</h3>
@@ -181,19 +176,13 @@ const Solutions: React.FC = () => {
                   </p>
                 </div>
 
-                <div className="flex items-center justify-between mt-4">
-                   {/* Rating */}
-                   <div className="flex items-center gap-1.5 bg-gray-50 px-2 py-1 rounded-md">
-                     <Star size={12} className="text-gray-400" fill="currentColor" />
-                     <span className="text-xs font-bold text-gray-600">{solution.rating || '4.8'}</span>
-                   </div>
-
-                   {/* Get Button */}
+                <div className="flex items-center justify-end mt-4">
+                   {/* View Details Button */}
                    <NavLink 
-                     to={`/solutions/${solution.id}`} 
+                     to={`/solutions/${solution.id}`}
                      className="bg-slate-100 hover:bg-azure hover:text-white text-azure font-bold text-xs px-6 py-2 rounded-full transition-all uppercase tracking-wider shadow-sm hover:shadow-md"
                    >
-                     GET
+                     View
                    </NavLink>
                 </div>
               </div>

@@ -1,12 +1,15 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, Navigate, NavLink } from 'react-router-dom';
-import { Check, ArrowRight, Download, Share2 } from 'lucide-react';
+import { Check, Download, Share2, Star } from 'lucide-react';
 import { SOLUTIONS } from '../constants';
 import { getSolutionLogo } from '../components/SolutionLogos';
+import WaitlistModal from '../components/WaitlistModal';
 
 const SolutionDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
+  
   const solution = SOLUTIONS.find(s => s.id === id);
 
   if (!solution) {
@@ -40,13 +43,13 @@ const SolutionDetail: React.FC = () => {
               </p>
 
               <div className="flex items-center justify-center md:justify-start gap-4">
-                 <NavLink 
-                    to="/contact" 
+                 <button 
+                    onClick={() => setIsWaitlistOpen(true)}
                     className="px-8 py-3 bg-azure text-white rounded-full font-bold hover:bg-ocean transition-all shadow-lg shadow-azure/30 hover:-translate-y-1 flex items-center gap-2"
                   >
                     Get {solution.title}
                     <Download className="h-4 w-4" />
-                 </NavLink>
+                 </button>
                  <button className="p-3 rounded-full bg-white border border-gray-200 text-gray-500 hover:text-azure hover:border-azure transition-colors">
                     <Share2 className="h-5 w-5" />
                  </button>
@@ -107,12 +110,8 @@ const SolutionDetail: React.FC = () => {
                   <span className="text-slate-900 font-medium">{solution.category}</span>
                 </div>
                 <div className="flex justify-between border-b border-gray-100 pb-2">
-                  <span className="text-gray-500">Rating</span>
-                  <span className="text-slate-900 font-medium">{solution.rating} / 5.0</span>
-                </div>
-                <div className="flex justify-between border-b border-gray-100 pb-2">
-                  <span className="text-gray-500">Downloads</span>
-                  <span className="text-slate-900 font-medium">{solution.downloads}</span>
+                  <span className="text-gray-500">Status</span>
+                  <span className="text-azure font-bold bg-azure/5 px-2 py-0.5 rounded text-xs uppercase tracking-wide">Available Soon</span>
                 </div>
               </div>
             </div>
@@ -135,17 +134,23 @@ const SolutionDetail: React.FC = () => {
                 <p className="text-gray-600 mb-6 text-sm">
                   Get started with {solution.title} today and transform your workflow.
                 </p>
-                <NavLink 
-                  to="/contact" 
+                <button 
+                  onClick={() => setIsWaitlistOpen(true)}
                   className="block w-full py-3 bg-azure text-white rounded-lg font-bold hover:bg-ocean transition-colors shadow-lg shadow-azure/20"
                 >
                   Try {solution.title}
-                </NavLink>
+                </button>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      <WaitlistModal 
+        isOpen={isWaitlistOpen} 
+        onClose={() => setIsWaitlistOpen(false)} 
+        appName={solution.title} 
+      />
     </div>
   );
 };
